@@ -46,7 +46,7 @@ Roles: `admin`, `manager`, `receptionist`, `housekeeping`, `service` and `guest`
 Requirements: Node.js 18+ and a MongoDB instance.
 
 ```bash
-git clone https://github.com/Neel455/Luxury-stay-HMS.git
+git clone https://github.com/ShahneelSohail/Luxury-stay-HMS.git
 cd Luxury-stay-HMS
 ```
 
