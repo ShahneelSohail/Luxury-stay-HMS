@@ -6,27 +6,17 @@ const Feedback           = require('../models/Feedback');
 const ServiceRequest     = require('../models/ServiceRequest');
 const MaintenanceRequest = require('../models/MaintenanceRequest');
 const GuestActivityLog   = require('../models/GuestActivityLog');
-const Suite              = require('../models/Suite');
 const { AppError }    = require('../middleware/errorHandler');
 const catchAsync      = require('../utils/catchAsync');
 const { sendSuccess } = require('../utils/apiResponse');
-
-// Type label → enum value map
-const TYPE_LABEL_MAP = {
-  'Deluxe Twin':   'deluxe_twin',
-  'Deluxe King':   'deluxe_king',
-  'Junior Suite':  'junior_suite',
-  'Premier Suite': 'premier_suite',
-  'Penthouse':     'penthouse',
-};
-
-const TYPE_DISPLAY = {
-  deluxe_twin:   'Deluxe Twin',
-  deluxe_king:   'Deluxe King',
-  junior_suite:  'Junior Suite',
-  premier_suite: 'Premier Suite',
-  penthouse:     'Penthouse',
-};
+const {
+  TYPE_LABEL_MAP,
+  TYPE_DISPLAY,
+  DEPOSIT_RATE,
+  countNights,
+  findBlockedRoomIds,
+  findAvailableRoomTypes,
+} = require('../utils/booking');
 
 const STAY_PREFERENCES = new Set([
   'Down pillow',
@@ -160,57 +150,9 @@ exports.getAvailableRooms = catchAsync(async (req, res, next) => {
     return next(new AppError('Check-out must be after check-in.', 400));
   }
 
-  const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+  const { nights, roomCount, types } = await findAvailableRoomTypes({ checkInDate, checkOutDate, adults });
 
-  // Find rooms blocked by overlapping reservations
-  const blockedIds = await Reservation.find({
-    status:       { $in: ['pending', 'confirmed', 'checked-in'] },
-    checkInDate:  { $lt: checkOutDate },
-    checkOutDate: { $gt: checkInDate },
-  }).distinct('room');
-
-  const filter = { status: { $in: ['available', 'reserved'] }, isActive: true };
-  if (adults) filter.maxGuests = { $gte: Number(adults) };
-  if (blockedIds.length) filter._id = { $nin: blockedIds };
-
-  const rooms = await Room.find(filter).sort({ 'rates.standard': 1 });
-
-  // Group by type — one entry per type showing the cheapest available room
-  const byType = {};
-  rooms.forEach(r => {
-    if (!byType[r.type]) {
-      byType[r.type] = {
-        type:      r.type,
-        typeLabel: TYPE_DISPLAY[r.type] || r.type,
-        rate:      r.rates.standard,
-        total:     r.rates.standard * nights,
-        maxGuests: r.maxGuests,
-        count:     0,
-        roomId:    r._id,
-      };
-    }
-    byType[r.type].count++;
-  });
-
-  // Enrich each type with Suite marketing content (description, sqm, images, gradient, amenities)
-  const slugs  = Object.keys(byType);
-  const suites = await Suite.find({ slug: { $in: slugs }, isActive: true }).lean();
-  suites.forEach(s => {
-    if (byType[s.slug]) {
-      byType[s.slug].suiteId    = s._id;
-      byType[s.slug].description = s.description || null;
-      byType[s.slug].sqm         = s.sqm         || null;
-      byType[s.slug].gradient    = s.gradient     || null;
-      byType[s.slug].amenities   = s.amenities    || [];
-      byType[s.slug].images      = s.images       || [];
-      byType[s.slug].sortOrder   = s.sortOrder    ?? 99;
-    }
-  });
-
-  // Sort by suite sortOrder so the order matches admin configuration
-  const types = Object.values(byType).sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99));
-
-  sendSuccess(res, 200, `${rooms.length} room(s) available.`, {
+  sendSuccess(res, 200, `${roomCount} room(s) available.`, {
     checkIn,
     checkOut,
     nights,
@@ -248,14 +190,10 @@ exports.createBooking = catchAsync(async (req, res, next) => {
   const typeEnum = TYPE_LABEL_MAP[roomType] || roomType;
   if (!typeEnum) return next(new AppError('Room type is required.', 400));
 
-  const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+  const nights = countNights(checkInDate, checkOutDate);
 
   // Find an available room of the requested type
-  const blockedIds = await Reservation.find({
-    status:       { $in: ['pending', 'confirmed', 'checked-in'] },
-    checkInDate:  { $lt: checkOutDate },
-    checkOutDate: { $gt: checkInDate },
-  }).distinct('room');
+  const blockedIds = await findBlockedRoomIds(checkInDate, checkOutDate);
 
   const roomFilter = {
     type:      typeEnum,
@@ -288,7 +226,7 @@ exports.createBooking = catchAsync(async (req, res, next) => {
 
   // Compute total
   const totalAmount    = room.rates.standard * nights;
-  const depositAmount  = +(totalAmount * 0.3).toFixed(2);
+  const depositAmount  = +(totalAmount * DEPOSIT_RATE).toFixed(2);
   const cleanStayPreferences = Array.isArray(stayPreferences)
     ? stayPreferences.filter(p => STAY_PREFERENCES.has(p))
     : [];

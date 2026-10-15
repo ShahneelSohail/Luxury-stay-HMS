@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Icon from '../components/Icon';
+import BookingAssistant from '../components/BookingAssistant';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 
 const NAV_ITEMS = [
@@ -377,6 +378,8 @@ export default function PublicShell({ children, dark = false }) {
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <PublicFooter isMobile={isMobile} />
+
+      <BookingAssistant />
     </div>
   );
 }

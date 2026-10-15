@@ -86,6 +86,9 @@ app.use('/api/notifications', require('./routes/notifications'));
 // Guest self-service portal
 app.use('/api/guest', require('./routes/guestSelf'));
 
+// AI booking assistant (public chat, books through /api/guest/book)
+app.use('/api/assistant', require('./routes/assistant'));
+
 // Role page permissions
 app.use('/api/role-permissions', require('./routes/rolePermissions'));
 
