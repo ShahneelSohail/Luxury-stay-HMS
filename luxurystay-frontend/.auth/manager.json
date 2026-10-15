@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "ls_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZmI1OWJiM2IzNDUxMzY4Y2I3ZWQ3ZiIsInJvbGUiOiJtYW5hZ2VyIiwibmFtZSI6IkhlbnJpIENhc3NlbCIsImVtYWlsIjoiaC5jYXNzZWxAbHV4dXJ5c3RheS5jbyIsImlhdCI6MTc4MDI2ODA5MCwiZXhwIjoxNzgwODcyODkwfQ.k6FKTdjs9mziCi97hxs4khS0aOpvc9azYFzJfkLonxQ"
+        },
+        {
+          "name": "ls_user",
+          "value": "{\"id\":\"69fb59bb3b3451368cb7ed7f\",\"name\":\"Henri Cassel\",\"email\":\"h.cassel@luxurystay.co\",\"role\":\"manager\",\"phone\":null,\"isActive\":true,\"lastLogin\":\"2026-05-31T22:54:49.961Z\",\"createdAt\":\"2026-05-06T15:09:47.537Z\",\"permissions\":{\"dashboard\":{\"view\":true},\"users\":{\"view\":false,\"create\":false,\"edit\":false,\"deactivate\":false},\"guests\":{\"view\":true,\"create\":true,\"edit\":true,\"delete\":false,\"search\":true},\"rooms\":{\"view\":true,\"create\":true,\"edit\":true,\"delete\":false,\"updateStatus\":true},\"reservations\":{\"view\":true,\"create\":true,\"edit\":true,\"cancel\":true,\"checkIn\":true,\"checkOut\":true},\"invoices\":{\"view\":true,\"create\":true,\"edit\":true,\"updatePayment\":true},\"housekeeping\":{\"view\":true,\"create\":true,\"assign\":true,\"complete\":true,\"reportIssue\":true},\"maintenance\":{\"view\":true,\"create\":true,\"assign\":true,\"resolve\":true},\"feedback\":{\"view\":true,\"create\":false,\"respond\":true},\"services\":{\"view\":true,\"create\":false,\"assign\":true},\"reports\":{\"view\":true},\"notifications\":{\"view\":true}}}"
+        }
+      ]
+    }
+  ]
+}

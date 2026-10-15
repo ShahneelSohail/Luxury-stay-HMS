@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
+
+# Auto-generated docs & screenshot tooling
+docs/
+/package.json
+/package-lock.json
+capture_screenshots.mjs
+generate_docs.mjs
+
+# Tooling / local artifacts
+.claude/
+playwright-report/
+test-results/
+dev.log
+server.log
+!.env.example

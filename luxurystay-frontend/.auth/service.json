@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "ls_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDcxNzAyNzk0ZDliMTBhY2Y3Zjk2MCIsInJvbGUiOiJzZXJ2aWNlIiwibmFtZSI6IlRvbWFzIFJleWVzIiwiZW1haWwiOiJ0LnJleWVzQGx1eHVyeXN0YXkuY28iLCJpYXQiOjE3ODAyNjgwOTQsImV4cCI6MTc4MDg3Mjg5NH0.2Dv-VJL2W7m4Apael2VS6k_wKhqpnOh02Qi6ctoXiXg"
+        },
+        {
+          "name": "ls_user",
+          "value": "{\"id\":\"6a071702794d9b10acf7f960\",\"name\":\"Tomas Reyes\",\"email\":\"t.reyes@luxurystay.co\",\"role\":\"service\",\"phone\":null,\"isActive\":true,\"lastLogin\":\"2026-05-31T22:54:54.429Z\",\"createdAt\":\"2026-05-15T12:52:18.994Z\",\"permissions\":{\"dashboard\":{\"view\":true},\"users\":{\"view\":false,\"create\":false,\"edit\":false,\"deactivate\":false},\"guests\":{\"view\":false,\"create\":false,\"edit\":false,\"delete\":false,\"search\":false},\"rooms\":{\"view\":true,\"create\":false,\"edit\":false,\"delete\":false,\"updateStatus\":true},\"reservations\":{\"view\":false,\"create\":false,\"edit\":false,\"cancel\":false,\"checkIn\":false,\"checkOut\":false},\"invoices\":{\"view\":false,\"create\":false,\"edit\":false,\"updatePayment\":false},\"housekeeping\":{\"view\":false,\"create\":false,\"assign\":false,\"complete\":false,\"reportIssue\":false},\"maintenance\":{\"view\":true,\"create\":true,\"assign\":false,\"resolve\":true},\"feedback\":{\"view\":false,\"create\":false,\"respond\":false},\"services\":{\"view\":true,\"create\":false,\"assign\":true,\"fulfill\":true},\"reports\":{\"view\":false},\"notifications\":{\"view\":true}}}"
+        }
+      ]
+    }
+  ]
+}

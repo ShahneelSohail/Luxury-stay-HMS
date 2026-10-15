@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "ls_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZmI1OWJkM2IzNDUxMzY4Y2I3ZWQ4NSIsInJvbGUiOiJob3VzZWtlZXBpbmciLCJuYW1lIjoiUm9zYSBNZW5kb3phIiwiZW1haWwiOiJyLm1lbmRvemFAbHV4dXJ5c3RheS5jbyIsImlhdCI6MTc4MDI2ODA5MywiZXhwIjoxNzgwODcyODkzfQ.PLvyrCcY2y0R7r_MAoDpXyEaKt1PLZJGicetiUt9Y4c"
+        },
+        {
+          "name": "ls_user",
+          "value": "{\"id\":\"69fb59bd3b3451368cb7ed85\",\"name\":\"Rosa Mendoza\",\"email\":\"r.mendoza@luxurystay.co\",\"role\":\"housekeeping\",\"phone\":null,\"isActive\":true,\"lastLogin\":\"2026-05-31T22:54:52.977Z\",\"createdAt\":\"2026-05-06T15:09:49.162Z\",\"permissions\":{\"dashboard\":{\"view\":true},\"users\":{\"view\":false,\"create\":false,\"edit\":false,\"deactivate\":false},\"guests\":{\"view\":false,\"create\":false,\"edit\":false,\"delete\":false,\"search\":false},\"rooms\":{\"view\":true,\"create\":false,\"edit\":false,\"delete\":false,\"updateStatus\":true},\"reservations\":{\"view\":false,\"create\":false,\"edit\":false,\"cancel\":false,\"checkIn\":false,\"checkOut\":false},\"invoices\":{\"view\":false,\"create\":false,\"edit\":false,\"updatePayment\":false},\"housekeeping\":{\"view\":true,\"create\":false,\"assign\":false,\"complete\":true,\"reportIssue\":true},\"maintenance\":{\"view\":false,\"create\":true,\"assign\":false,\"resolve\":false},\"feedback\":{\"view\":false,\"create\":false,\"respond\":false},\"services\":{\"view\":true,\"create\":false,\"assign\":false},\"reports\":{\"view\":false},\"notifications\":{\"view\":true}}}"
+        }
+      ]
+    }
+  ]
+}

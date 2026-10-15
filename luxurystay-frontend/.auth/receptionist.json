@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "ls_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZmI1OWJjM2IzNDUxMzY4Y2I3ZWQ4MiIsInJvbGUiOiJyZWNlcHRpb25pc3QiLCJuYW1lIjoiWXVraSBUYW5ha2EiLCJlbWFpbCI6InkudGFuYWthQGx1eHVyeXN0YXkuY28iLCJpYXQiOjE3ODAyNjgwOTEsImV4cCI6MTc4MDg3Mjg5MX0.R_9LmstSKu481Nd4bAkqUFeHYbnO1nfg07H3iF7hUtk"
+        },
+        {
+          "name": "ls_user",
+          "value": "{\"id\":\"69fb59bc3b3451368cb7ed82\",\"name\":\"Yuki Tanaka\",\"email\":\"y.tanaka@luxurystay.co\",\"role\":\"receptionist\",\"phone\":null,\"isActive\":true,\"lastLogin\":\"2026-05-31T22:54:51.467Z\",\"createdAt\":\"2026-05-06T15:09:48.334Z\",\"permissions\":{\"dashboard\":{\"view\":true},\"users\":{\"view\":false,\"create\":false,\"edit\":false,\"deactivate\":false},\"guests\":{\"view\":true,\"create\":true,\"edit\":true,\"delete\":false,\"search\":true},\"rooms\":{\"view\":true,\"create\":false,\"edit\":false,\"delete\":false,\"updateStatus\":false},\"reservations\":{\"view\":true,\"create\":true,\"edit\":true,\"cancel\":false,\"checkIn\":true,\"checkOut\":true},\"invoices\":{\"view\":true,\"create\":true,\"edit\":false,\"updatePayment\":true},\"housekeeping\":{\"view\":false,\"create\":false,\"assign\":false,\"complete\":false,\"reportIssue\":false},\"maintenance\":{\"view\":true,\"create\":true,\"assign\":false,\"resolve\":false},\"feedback\":{\"view\":false,\"create\":false,\"respond\":false},\"services\":{\"view\":true,\"create\":false,\"assign\":false},\"reports\":{\"view\":false},\"notifications\":{\"view\":true}}}"
+        }
+      ]
+    }
+  ]
+}
