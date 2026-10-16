@@ -64,7 +64,7 @@ exports.getMyReservations = catchAsync(async (req, res, next) => {
     room:           r.room ? { ...r.room, number: r.room.roomNumber } : r.room,
     checkIn:        r.checkInDate,
     checkOut:       r.checkOutDate,
-    nights:         r.nights,
+    nights:         countNights(r.checkInDate, r.checkOutDate),
     adults:         r.adults,
     children:       r.children,
     status:         r.status,

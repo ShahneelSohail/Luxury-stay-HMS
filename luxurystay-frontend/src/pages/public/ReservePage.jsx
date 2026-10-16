@@ -4,6 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import PublicShell from '../../layouts/PublicShell';
 import Icon from '../../components/Icon';
 import Photo from '../../components/Photo';
+import Stepper from '../../components/Stepper';
+import DateRangePicker, { countNights, fmtShortDate } from '../../components/DateRangePicker';
 import api from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -24,13 +26,6 @@ const SLUG_TONES = {
   premier_suite: 'deep',
   penthouse:     'night',
 };
-
-const WEEKDAYS    = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const MONTHS      = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-function toISO(year, month, day) {
-  return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-}
 
 function asText(value) {
   return value == null ? '' : String(value);
@@ -230,89 +225,16 @@ function FolioRail({ suite, nights, subtotal, tax, total, cancelBy, onContinue, 
   );
 }
 
-// ─── Stepper ─────────────────────────────────────────────────────────────────
-
-function Stepper({ label, value, onChange, min, max }) {
-  return (
-    <div>
-      <div className="label" style={{ marginBottom: 8 }}>{label}</div>
-      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--hairline)', padding: 4 }}>
-        <button
-          className="btn btn-ghost btn-sm"
-          disabled={value <= min}
-          onClick={() => onChange(value - 1)}
-          style={{ minWidth: 32, padding: '8px 0' }}
-        >−</button>
-        <div style={{
-          flex: 1, textAlign: 'center',
-          fontFamily: 'var(--serif)', fontSize: 22, fontStyle: 'italic',
-        }}>
-          {value}
-        </div>
-        <button
-          className="btn btn-ghost btn-sm"
-          disabled={value >= max}
-          onClick={() => onChange(value + 1)}
-          style={{ minWidth: 32, padding: '8px 0' }}
-        >+</button>
-      </div>
-    </div>
-  );
-}
-
 // ─── Step 1 — Dates ──────────────────────────────────────────────────────────
 
 function StepDates({ dates, onDateChange }) {
   const { isMobile } = useBreakpoint();
-  const today = new Date();
-  const [calYear,  setCalYear]  = useState(today.getFullYear());
-  const [calMonth, setCalMonth] = useState(today.getMonth() + 1);
+  const nights = countNights(dates.checkIn, dates.checkOut);
 
-  function handleDayClick(day) {
-    const iso = toISO(calYear, calMonth, day);
-    if (!dates.checkIn || (dates.checkIn && dates.checkOut)) {
-      onDateChange('checkIn',  iso);
-      onDateChange('checkOut', '');
-    } else {
-      if (iso > dates.checkIn) {
-        onDateChange('checkOut', iso);
-      } else {
-        onDateChange('checkIn',  iso);
-        onDateChange('checkOut', '');
-      }
-    }
+  function handleRangeChange({ checkIn, checkOut }) {
+    onDateChange('checkIn',  checkIn);
+    onDateChange('checkOut', checkOut);
   }
-
-  function prevMonth() {
-    if (calMonth === 1) { setCalYear(y => y - 1); setCalMonth(12); }
-    else setCalMonth(m => m - 1);
-  }
-  function nextMonth() {
-    if (calMonth === 12) { setCalYear(y => y + 1); setCalMonth(1); }
-    else setCalMonth(m => m + 1);
-  }
-
-  const daysInMonth   = new Date(calYear, calMonth, 0).getDate();
-  const firstDayOfWk  = (new Date(calYear, calMonth - 1, 1).getDay() + 6) % 7;
-  const cells = [
-    ...Array(firstDayOfWk).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
-  while (cells.length % 7 !== 0) cells.push(null);
-
-  const todayISO = toISO(today.getFullYear(), today.getMonth() + 1, today.getDate());
-  const dayISO   = (d) => toISO(calYear, calMonth, d);
-
-  const nights = dates.checkIn && dates.checkOut
-    ? Math.ceil((new Date(dates.checkOut) - new Date(dates.checkIn)) / 86400000) : 0;
-
-  function fmtDisplay(iso) {
-    if (!iso) return '—';
-    const d = new Date(iso + 'T00:00:00');
-    return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-  }
-
-  const monthLabel = `${MONTHS[calMonth - 1]} ${calYear}`;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -323,7 +245,7 @@ function StepDates({ dates, onDateChange }) {
           <div>
             <div className="eyebrow" style={{ marginBottom: 6 }}>Arrival → Departure</div>
             <div className="display" style={{ fontSize: 26, fontStyle: 'italic', lineHeight: 1 }}>
-              {fmtDisplay(dates.checkIn)} → {fmtDisplay(dates.checkOut)}
+              {fmtShortDate(dates.checkIn)} → {fmtShortDate(dates.checkOut)}
             </div>
           </div>
           {nights > 0 && (
@@ -337,66 +259,7 @@ function StepDates({ dates, onDateChange }) {
         </div>
 
         <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 24 }}>
-          {/* Month nav */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <button className="btn btn-ghost btn-sm" onClick={prevMonth}>
-              <Icon name="arrow_left" size={10} />
-            </button>
-            <div className="display" style={{ fontSize: 20, fontStyle: 'italic' }}>{monthLabel}</div>
-            <button className="btn btn-ghost btn-sm" onClick={nextMonth}>
-              <Icon name="arrow_right" size={10} />
-            </button>
-          </div>
-
-          {/* Calendar grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
-            {WEEKDAYS.map(d => (
-              <div key={d} style={{
-                textAlign: 'center', fontSize: 11, color: 'var(--mute)',
-                letterSpacing: '0.14em', textTransform: 'uppercase', paddingBottom: 6, fontWeight: 600,
-              }}>{d}</div>
-            ))}
-            {cells.map((day, i) => {
-              if (!day) return <div key={i} />;
-              const iso     = dayISO(day);
-              const isCI    = dates.checkIn  === iso;
-              const isCO    = dates.checkOut === iso;
-              const isEdge  = isCI || isCO;
-              const inRange = dates.checkIn && dates.checkOut && iso > dates.checkIn && iso < dates.checkOut;
-              const isPast  = iso < todayISO;
-              return (
-                <div
-                  key={i}
-                  onClick={() => !isPast && handleDayClick(day)}
-                  style={{
-                    aspectRatio: '1',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'var(--serif)', fontSize: 14,
-                    background: isEdge ? 'var(--ink)' : inRange ? 'var(--linen)' : 'transparent',
-                    color: isEdge ? 'var(--paper)' : inRange ? 'var(--ink)' : isPast ? 'var(--mute)' : 'var(--ink-3)',
-                    border: `1px solid ${isEdge ? 'var(--ink)' : inRange ? 'var(--hairline)' : 'transparent'}`,
-                    cursor: isPast ? 'default' : 'pointer',
-                    fontStyle: isEdge ? 'italic' : 'normal',
-                    opacity: isPast ? 0.38 : 1,
-                  }}
-                >
-                  {day}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Legend */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 18, fontSize: 12, color: 'var(--mute)', fontWeight: 500 }}>
-            <span>
-              <span style={{ display: 'inline-block', width: 10, height: 10, background: 'var(--ink)', marginRight: 6, verticalAlign: 'middle' }} />
-              Arrival / Departure
-            </span>
-            <span>
-              <span style={{ display: 'inline-block', width: 10, height: 10, background: 'var(--linen)', border: '1px solid var(--hairline)', marginRight: 6, verticalAlign: 'middle' }} />
-              Stay
-            </span>
-          </div>
+          <DateRangePicker checkIn={dates.checkIn} checkOut={dates.checkOut} onChange={handleRangeChange} />
         </div>
       </div>
 

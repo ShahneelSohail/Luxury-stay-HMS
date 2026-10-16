@@ -10,7 +10,7 @@ A full-stack hotel management system with a public booking site for guests and a
 - Browse suites, check availability and book online
 - "My Stay" portal: view and cancel reservations, request services, report maintenance issues, leave feedback
 - Contact form that feeds the staff inbox
-- AI concierge chat (Google Gemini): answers suite questions, checks live availability and prepares a reservation. The guest finishes with a Confirm button, so the bot never books on its own
+- AI concierge chat (Groq with Gemini failover): answers suite questions, checks live availability and prepares a reservation using in-chat date pickers, guest steppers, suite cards and quick-reply chips. The guest finishes with a Confirm button, so the bot never books on its own, and contact details are only accepted if the guest actually typed them
 
 **Staff back-office**
 - Dashboard with arrivals, departures and room status at a glance
@@ -59,7 +59,7 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` and set `MONGODB_URI`, a strong `JWT_SECRET`, and, to enable the AI concierge, a free `GEMINI_API_KEY` from [Google AI Studio](https://aistudio.google.com/apikey). Without a key the rest of the app works and the chat shows an unavailable message. Generate a JWT secret with:
+Edit `.env` and set `MONGODB_URI` and a strong `JWT_SECRET`. To enable the AI concierge, add a free `GROQ_API_KEY` from [Groq](https://console.groq.com/keys) and/or a free `GEMINI_API_KEY` from [Google AI Studio](https://aistudio.google.com/apikey). With both set, the assistant tries Groq first and falls back to Gemini when a provider is busy or rate-limited. Without any key the rest of the app works and the chat shows an unavailable message. Generate a JWT secret with:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"

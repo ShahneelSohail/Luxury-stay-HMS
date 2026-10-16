@@ -6,13 +6,18 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import Icon from './Icon';
+import { ChoiceChips, ContactForm, DatesPanel, GuestsPanel, SuiteCards, fmtEuro } from './AssistantWidgets';
 
 const STORAGE_KEY  = 'ls_assistant_chat';
 const MAX_HISTORY  = 12;
 const CHAT_TIMEOUT_MS = 60000;
 const GREETING     = 'Welcome to LuxuryStay. I can check availability, describe our suites and prepare a reservation for you. How can I help?';
-
-const fmtEuro = (n) => `€${Number(n).toLocaleString()}`;
+const STARTERS     = ['Check availability', 'Tell me about the suites', 'Plan a stay'];
+const STARTER_TEXT = {
+  'Check availability':       "I'd like to check availability",
+  'Tell me about the suites': 'Tell me about your suites',
+  'Plan a stay':              "I'd like to book a stay",
+};
 
 function loadSession() {
   try {
@@ -85,9 +90,13 @@ export default function BookingAssistant() {
 
   const setOpen = (value) => setSession(s => ({ ...s, open: value }));
 
-  async function handleSend(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    const text = input.trim();
+    sendMessage(input);
+  }
+
+  async function sendMessage(rawText) {
+    const text = rawText.trim();
     if (!text || loading) return;
 
     const next = [...messages, { role: 'user', text }];
@@ -97,8 +106,8 @@ export default function BookingAssistant() {
 
     try {
       const { data } = await api.post('/api/assistant/chat', { messages: toApiHistory(next) }, { timeout: CHAT_TIMEOUT_MS });
-      const { reply, bookingDraft } = data.data;
-      setSession(s => ({ ...s, messages: [...next, { role: 'assistant', text: reply, draft: bookingDraft }] }));
+      const { reply, bookingDraft, ui } = data.data;
+      setSession(s => ({ ...s, messages: [...next, { role: 'assistant', text: reply, draft: bookingDraft, ui }] }));
     } catch (err) {
       const message = err.response?.data?.message || 'The assistant is unavailable right now. You can still book from the Reserve page.';
       setSession(s => ({ ...s, messages: [...next, { role: 'assistant', text: message }] }));
@@ -137,6 +146,19 @@ export default function BookingAssistant() {
   }
 
   const lastDraftIndex = messages.reduce((acc, m, i) => (m.draft ? i : acc), -1);
+  const [firstName = '', ...rest] = (user?.name || '').split(' ');
+  const contactInitial = { firstName, lastName: rest.join(' '), phone: user?.phone || '' };
+
+  function renderWidget(ui) {
+    switch (ui.type) {
+      case 'choices': return <ChoiceChips options={ui.options} onPick={sendMessage} />;
+      case 'dates':   return <DatesPanel onSubmit={sendMessage} />;
+      case 'guests':  return <GuestsPanel onSubmit={sendMessage} />;
+      case 'suites':  return <SuiteCards suites={ui.suites} nights={ui.nights} onPick={sendMessage} />;
+      case 'contact': return <ContactForm initial={contactInitial} onSubmit={sendMessage} />;
+      default:        return null;
+    }
+  }
 
   return (
     <>
@@ -184,6 +206,10 @@ export default function BookingAssistant() {
                   {m.draft && i - 1 === lastDraftIndex && (
                     <BookingCard draft={m.draft} onConfirm={() => handleConfirm(m.draft)} confirming={confirming} />
                   )}
+                  {m.ui && i === messages.length && !loading && renderWidget(m.ui)}
+                  {i === 0 && !messages.length && (
+                    <ChoiceChips options={STARTERS} onPick={label => sendMessage(STARTER_TEXT[label])} />
+                  )}
                 </div>
               );
             })}
@@ -195,7 +221,7 @@ export default function BookingAssistant() {
             <div ref={bottomRef} />
           </div>
 
-          <form onSubmit={handleSend} style={{ display: 'flex', gap: 8, padding: 12, borderTop: '1px solid var(--hairline)' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8, padding: 12, borderTop: '1px solid var(--hairline)' }}>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
