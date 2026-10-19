@@ -4,6 +4,10 @@ const { postJson, splitList } = require('./http');
 const BASE_URL       = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEFAULT_MODELS = 'gemini-flash-lite-latest,gemini-3.5-flash-lite,gemini-3.1-flash-lite';
 
+// Gemini 3 rejects function calls in the history that carry no thought signature. Calls made by
+// another provider (failover mid-conversation) have none, so Google's documented bypass is used.
+const FOREIGN_CALL_SIGNATURE = 'skip_thought_signature_validator';
+
 const toGeminiSchema = (node) => {
   if (Array.isArray(node)) return node.map(toGeminiSchema);
   if (node && typeof node === 'object') {
@@ -29,7 +33,7 @@ function toContents(messages) {
       role: 'model',
       parts: [
         ...(m.text ? [{ text: m.text }] : []),
-        ...(m.toolCalls || []).map(c => ({ functionCall: { name: c.name, args: c.args } })),
+        ...(m.toolCalls || []).map(c => ({ functionCall: { name: c.name, args: c.args }, thoughtSignature: FOREIGN_CALL_SIGNATURE })),
       ],
     };
   });
